@@ -1,0 +1,210 @@
+.dash {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 24px 100px;
+}
+
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.dash-eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--clay);
+  margin-bottom: 4px;
+}
+
+.dash-header h1 {
+  font-size: 28px;
+}
+
+.dash-link-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.dash-link-label {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dash-link {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--forest);
+  text-decoration: underline;
+  flex: 1;
+  min-width: 200px;
+  overflow-wrap: anywhere;
+}
+
+.copy-btn {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.dash-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 28px;
+}
+
+.dash-tab {
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  font-size: 14px;
+  text-transform: capitalize;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.dash-tab.active {
+  color: var(--ink);
+  border-bottom-color: var(--clay);
+  font-weight: 500;
+}
+
+.dash-empty {
+  color: var(--muted);
+  font-size: 14px;
+  padding: 24px 0;
+}
+
+.booking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.booking-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--forest);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.booking-row.status-cancelled { border-left-color: var(--clay); opacity: 0.6; }
+.booking-row.status-completed { border-left-color: var(--gold); }
+.booking-row.status-no_show { border-left-color: var(--muted); opacity: 0.7; }
+
+.booking-row-main {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.booking-client { font-weight: 600; }
+.booking-service { color: var(--muted); font-size: 14px; }
+.booking-time { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+
+.booking-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.status-badge.status-confirmed { background: #E4EDE7; color: var(--forest); }
+.status-badge.status-completed { background: #F3E8CE; color: #8A6A1E; }
+.status-badge.status-cancelled { background: #F3DFD9; color: var(--clay); }
+.status-badge.status-no_show { background: var(--line); color: var(--muted); }
+
+.booking-row-actions button {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.booking-row-actions button.danger {
+  color: var(--clay);
+  border-color: var(--clay);
+}
+
+.inline-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.inline-form input,
+.inline-form select {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 14px;
+  background: var(--white);
+}
+
+.inline-form input[type="number"] { width: 110px; }
+.inline-form .btn-primary { padding: 10px 18px; font-size: 14px; }
+
+.service-manage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.service-manage-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+
+.service-manage-row .muted { color: var(--muted); font-size: 13px; }
+.service-manage-row button {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--clay);
+  font-size: 13px;
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .dash { padding: 32px 16px 80px; }
+}
