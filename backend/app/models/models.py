@@ -59,7 +59,11 @@ class Service(db.Model):
     name = db.Column(db.String(120), nullable=False)
     duration_minutes = db.Column(db.Integer, nullable=False, default=30)
     price = db.Column(db.Numeric(10, 2), nullable=False)
+    deposit_percent = db.Column(db.Integer, nullable=False, default=20)  # % of price required upfront
     active = db.Column(db.Boolean, default=True)
+
+    def deposit_amount(self):
+        return round(float(self.price) * self.deposit_percent / 100, 2)
 
     def to_dict(self):
         return {
@@ -67,6 +71,8 @@ class Service(db.Model):
             "name": self.name,
             "durationMinutes": self.duration_minutes,
             "price": float(self.price),
+            "depositPercent": self.deposit_percent,
+            "depositAmount": self.deposit_amount(),
             "active": self.active,
         }
 
@@ -103,9 +109,15 @@ class Booking(db.Model):
     client_phone = db.Column(db.String(20), nullable=False)
 
     booking_time = db.Column(db.DateTime, nullable=False)
-    status = db.Column(db.String(20), default="confirmed")  # confirmed, cancelled, completed, no_show
+    # pending_payment: awaiting checkout completion; confirmed: paid/held; cancelled; completed; no_show
+    status = db.Column(db.String(20), default="pending_payment")
     reminder_sent = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    payment_status = db.Column(db.String(20), default="unpaid")  # unpaid, paid, refunded
+    deposit_amount = db.Column(db.Numeric(10, 2), nullable=True)
+    flutterwave_tx_ref = db.Column(db.String(255), nullable=True, unique=True)
+    flutterwave_transaction_id = db.Column(db.String(255), nullable=True)
 
     service = db.relationship("Service")
     staff = db.relationship("Staff")
@@ -118,6 +130,8 @@ class Booking(db.Model):
             "bookingTime": self.booking_time.isoformat(),
             "status": self.status,
             "reminderSent": self.reminder_sent,
+            "paymentStatus": self.payment_status,
+            "depositAmount": float(self.deposit_amount) if self.deposit_amount is not None else None,
             "service": self.service.to_dict() if self.service else None,
             "staff": self.staff.to_dict() if self.staff else None,
         }

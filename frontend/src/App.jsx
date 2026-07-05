@@ -2,6 +2,7 @@ import { useRoute } from './router';
 import Home from './pages/Home';
 import Auth from './pages/Auth';
 import BookingPage from './pages/BookingPage';
+import BookingDemoPay from './pages/BookingDemoPay';
 import Dashboard from './pages/Dashboard';
 
 export default function App() {
@@ -23,6 +24,8 @@ export default function App() {
     page = <Auth navigate={navigate} />;
   } else if (path === '/dashboard') {
     page = <Dashboard navigate={navigate} />;
+  } else if (path.match(/^\/book\/[^/]+\/pay\/[^/]+\/?$/)) {
+    page = <BookingDemoPay />;
   } else if (path.startsWith('/book/')) {
     const slug = path.replace('/book/', '');
     page = <BookingPage slug={slug} />;

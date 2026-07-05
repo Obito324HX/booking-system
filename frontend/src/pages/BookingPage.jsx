@@ -28,7 +28,6 @@ export default function BookingPage({ slug }) {
   const [clientPhone, setClientPhone] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [confirmedBooking, setConfirmedBooking] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   const days = nextDays(14);
@@ -67,30 +66,22 @@ export default function BookingPage({ slug }) {
     setError(null);
     try {
       const bookingTime = `${selectedDate}T${selectedSlot}:00`;
-      const booking = await api.createBooking(slug, {
+      const { checkoutUrl } = await api.createBookingCheckout(slug, {
         serviceId: selectedService.id,
         clientName,
         clientPhone,
         bookingTime,
       });
-      setConfirmedBooking(booking);
+      // Hand off to the payment step for the deposit; booking is confirmed once payment completes
+      window.location.href = checkoutUrl;
     } catch (err) {
       setError(err.message);
-    } finally {
       setSubmitting(false);
     }
   }
 
   if (loading) return <div className="booking-status">Loading…</div>;
   if (error && !business) return <div className="booking-status">{error}</div>;
-
-  if (confirmedBooking) {
-    return (
-      <div className="booking-page">
-        <Ticket business={business} booking={confirmedBooking} />
-      </div>
-    );
-  }
 
   return (
     <div className="booking-page">
@@ -179,8 +170,11 @@ export default function BookingPage({ slug }) {
               />
             </label>
             {error && <p className="form-error">{error}</p>}
+            <p className="deposit-note">
+              A K{selectedService.depositAmount} deposit ({selectedService.depositPercent}% of K{selectedService.price}) is required to hold this slot. You'll pay securely by card or mobile money (Airtel, MTN, Zamtel) on the next step.
+            </p>
             <button className="btn-primary" type="submit" disabled={submitting}>
-              {submitting ? 'Confirming…' : 'Confirm booking'}
+              {submitting ? 'Redirecting to payment…' : `Pay K${selectedService.depositAmount} deposit & confirm`}
             </button>
           </form>
         </section>
@@ -189,7 +183,7 @@ export default function BookingPage({ slug }) {
   );
 }
 
-function Ticket({ business, booking }) {
+export function Ticket({ business, booking }) {
   const dt = new Date(booking.bookingTime);
   return (
     <div className="ticket">

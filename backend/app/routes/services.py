@@ -40,10 +40,16 @@ def get_availability(slug):
     if not windows:
         return jsonify({"slots": []})
 
+    # confirmed (paid) bookings always block; pending_payment only blocks within the
+    # checkout hold window, so abandoned Stripe checkouts don't lock a slot forever
+    hold_cutoff = datetime.utcnow() - timedelta(minutes=15)
     existing = Booking.query.filter(
         Booking.business_id == business.id,
-        Booking.status != "cancelled",
         db.func.date(Booking.booking_time) == target_date,
+        db.or_(
+            Booking.status == "confirmed",
+            db.and_(Booking.status == "pending_payment", Booking.created_at >= hold_cutoff),
+        ),
     ).all()
     booked_times = {b.booking_time for b in existing}
 
@@ -82,6 +88,7 @@ def create_service():
         name=data["name"],
         duration_minutes=data.get("durationMinutes", 30),
         price=data["price"],
+        deposit_percent=data.get("depositPercent", 20),
     )
     db.session.add(service)
     db.session.commit()
@@ -98,7 +105,7 @@ def update_service(service_id):
 
     data = request.get_json()
     for field, attr in [("name", "name"), ("durationMinutes", "duration_minutes"),
-                         ("price", "price"), ("active", "active")]:
+                         ("price", "price"), ("active", "active"), ("depositPercent", "deposit_percent")]:
         if field in data:
             setattr(service, attr, data[field])
     db.session.commit()
