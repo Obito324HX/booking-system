@@ -1,7 +1,7 @@
 import re
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app import db
 from app.models.models import Business
 
@@ -57,3 +57,27 @@ def login():
 
     token = create_access_token(identity=business.id)
     return jsonify({"token": token, "business": business.to_dict()})
+
+
+@auth_bp.patch("/password")
+@jwt_required()
+def change_password():
+    business_id = get_jwt_identity()
+    business = Business.query.get(business_id)
+    if not business:
+        return jsonify({"error": "Account not found"}), 404
+
+    data = request.get_json()
+    current_password = data.get("currentPassword", "")
+    new_password = data.get("newPassword", "")
+
+    if not check_password_hash(business.password_hash, current_password):
+        return jsonify({"error": "Current password is incorrect"}), 401
+
+    if len(new_password) < 8:
+        return jsonify({"error": "New password must be at least 8 characters"}), 400
+
+    business.password_hash = generate_password_hash(new_password)
+    db.session.commit()
+
+    return jsonify({"success": True})

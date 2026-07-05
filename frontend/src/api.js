@@ -16,6 +16,7 @@ async function request(path, options = {}) {
 export const api = {
   signup: (payload) => request('/auth/signup', { method: 'POST', body: JSON.stringify(payload) }),
   login: (payload) => request('/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+  changePassword: (payload) => request('/auth/password', { method: 'PATCH', body: JSON.stringify(payload) }),
   getBusiness: (slug) => request(`/businesses/${slug}`),
   getServices: (slug) => request(`/businesses/${slug}/services`),
   getAvailability: (slug, serviceId, date) =>

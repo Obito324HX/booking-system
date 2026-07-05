@@ -38,7 +38,7 @@ export default function Dashboard({ navigate }) {
       </div>
 
       <nav className="dash-tabs">
-        {['bookings', 'services', 'availability'].map((t) => (
+        {['bookings', 'services', 'availability', 'settings'].map((t) => (
           <button key={t} className={`dash-tab ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>
             {t}
           </button>
@@ -48,6 +48,7 @@ export default function Dashboard({ navigate }) {
       {tab === 'bookings' && <BookingsTab />}
       {tab === 'services' && <ServicesTab />}
       {tab === 'availability' && <AvailabilityTab />}
+      {tab === 'settings' && <SettingsTab />}
     </div>
   );
 }
@@ -203,6 +204,77 @@ function AvailabilityTab() {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function SettingsTab() {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError(null);
+    setSuccess(false);
+
+    if (newPassword !== confirmPassword) {
+      setError("New passwords don't match");
+      return;
+    }
+    if (newPassword.length < 8) {
+      setError('New password must be at least 8 characters');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await api.changePassword({ currentPassword, newPassword });
+      setSuccess(true);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div>
+      <h3 className="settings-heading">Change password</h3>
+      <form className="inline-form settings-form" onSubmit={handleSubmit}>
+        <input
+          type="password"
+          placeholder="Current password"
+          value={currentPassword}
+          onChange={(e) => setCurrentPassword(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="New password (min. 8 characters)"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Confirm new password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+        <button className="btn-primary" type="submit" disabled={submitting}>
+          {submitting ? 'Updating…' : 'Update password'}
+        </button>
+      </form>
+      {error && <p className="form-error">{error}</p>}
+      {success && <p className="settings-success">Password updated.</p>}
     </div>
   );
 }

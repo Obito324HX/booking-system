@@ -205,6 +205,27 @@
   text-decoration: underline;
 }
 
+.settings-heading {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.settings-form {
+  max-width: 360px;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.settings-form input {
+  width: 100%;
+}
+
+.settings-success {
+  color: #2f7a3f;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
 @media (max-width: 600px) {
   .dash { padding: 32px 16px 80px; }
 }
