@@ -11,9 +11,15 @@ jwt = JWTManager()
 def create_app():
     app = Flask(__name__)
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-        "DATABASE_URL", "sqlite:///booking.db"
-    ).replace("postgres://", "postgresql://", 1)
+    db_url = os.environ.get("DATABASE_URL", "sqlite:///booking.db")
+    # SQLAlchemy's bare "postgres://"/"postgresql://" prefixes default to the
+    # psycopg2 driver, which isn't installed (we use psycopg v3 instead, since
+    # psycopg2 doesn't support Python 3.14) — so force the psycopg dialect explicitly.
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql+psycopg://", 1)
+    elif db_url.startswith("postgresql://"):
+        db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "dev-secret-change-me")
 
